@@ -1,48 +1,70 @@
 package com.github.zipcodewilmington;
 
-
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
-/**
- * @author Dean
- * @version 1.0.0
- * @date 3/10/23 21:30
- */
 public class Hangman {
 
+    //main method to run the game
     public static void main(String[] args) {
+        //create new Hangman object and call theGame method
         new Hangman().theGame();
     }
 
-    public char theGame(){
-        String[] wordList = new String[]{"aardvark", "wallaby", "platypus", "ostrich", "axolotl", "alligator", "elephant", "terrapin", "sidewinder"}; //list of words
-        Random random = new Random();                            //new random object
-        int randomWordIndex = random.nextInt(wordList.length);  //get random int based on 0 - length of index
-        String theAnswer = wordList[(randomWordIndex)];         //selects the word from the wordList array using the randomly selected index value
-        int answerLength = theAnswer.length();                  //gets the length of the randomly selected word
-        char[] answerAsChars = new char[answerLength];          //creates char array with length of selected word - theAnswer.length()
-        char[] guessesAsChars = new char[answerLength];         //store guessed chars. same length as selected word
-        int numGuesses = 0;                                     //tracks total number of user guesses. will track as not to exceed theAnswer.length()
-        int charIndexCounter = 0;                               //may need to make sure we add the input char to the correct index of the charArray
-        char[] stringInputAsChar = new char[theAnswer.length()]; //we want to take the String input from user and convert to type char
-
-        while(numGuesses < answerLength) {                      //setting the condition that while the user hasn't used all guesses the game will continue
-
-            System.out.println("Let's play WordGuess version 1.0"); //introductory message
-            System.out.println("Current Guesses: " + guessesAsChars); //display the guessesAsChars so user knows what they've guessed so far
-            Scanner myScanner = new Scanner(System.in);             //creating new scanner object
-            System.out.println("Please enter your guess: ");        //ask user for input
-            stringInputAsChar = myScanner.next().charAt(0);
-            //stringInputToChar = myScanner.next().toCharArray();
-            //guessesAsChars[charIndexCounter] = myScanner.nextLine();
+    //method to play the game
+    public void theGame() {
+        //array of words to be guessed
+        String[] wordList = new String[]{"aardvark", "wallaby", "platypus", "ostrich", "axolotl", "alligator", "elephant", "terrapin", "sidewinder"};
+        //create a new Random object
+        Random random = new Random();
+        //choose a random index from the wordList array
+        int randomWordIndex = random.nextInt(wordList.length);
+        //select the word at the random index
+        String theAnswer = wordList[randomWordIndex];
+        //create a StringBuilder object with the same length as theAnswer filled with underscores
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < theAnswer.length(); i++) {
+            sb.append("_");
         }
 
-        return 0;
+        //create new array to store user guesses
+        char[] userGuesses = new char[theAnswer.length()];
+        //initialize the number of guesses made to 0
+        int numGuesses = 0;
+
+        //print initial message to user
+        System.out.println("Let's play WordGuess version 1.0");
+        Scanner myScanner = new Scanner(System.in);
+
+        while (numGuesses < 7) {
+            System.out.println("Current word: " + sb); //print current state of word
+            System.out.println("Current guesses: " + Arrays.toString(userGuesses)); //print user's current guesses
+            System.out.println("You have " + (7 - numGuesses) + " tries left."); //print number of tries user has left
+            System.out.println("Please enter a letter: "); //ask for user to enter a char
+            String input = myScanner.next(); //gets user's input
+            if (input.length() != 1) { //if user entered anything besides a single char then give warning
+                System.out.println("Please enter a single character.");
+                continue; //skip to next iteration of loop
+            }
+            char userGuess = input.charAt(0);
+            if (theAnswer.contains(String.valueOf(userGuess))) {
+                for (int i = 0; i < theAnswer.length(); i++) {
+                    if (theAnswer.charAt(i) == userGuess) {
+                        sb.setCharAt(i, userGuess);
+                    }
+                }
+            } else {
+                System.out.println("Sorry, that letter is not in the word.");
+                numGuesses++;
+            }
+            userGuesses[numGuesses] = userGuess;
+            if (sb.toString().equals(theAnswer)) {
+                System.out.println("Winner");
+                return;
+            }
+        }
+        System.out.println("You feel the noose tighten around your neck and you slowly fade into black.: " + theAnswer);
     }
-
-
-
 }
-
 
